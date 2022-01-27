@@ -1,0 +1,31 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: this
+spec:
+  interval: 5m
+  url: https://github.com/joshrwolf/aks-test
+  ref:
+    branch: main
+  ignore: |
+    .git/
+    .github/
+    .sops.yaml
+    .gitlab-ci.yml
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: demoapp
+spec:
+  interval: 5m0s
+  path: ./manifests
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: this
+  decryption:
+    provider: sops
+
